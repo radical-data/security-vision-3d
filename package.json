@@ -1,0 +1,16 @@
+{
+  "dependencies": {
+    "3d-force-graph": "^1.70.9",
+    "three": "^0.137.5"
+  },
+  "name": "security-vision-3d",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
