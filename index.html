@@ -11,19 +11,14 @@
     <script src="//unpkg.com/three"></script>
     <script src="node_modules/3d-force-graph/dist/3d-force-graph.js"></script>
     <script src="//unpkg.com/dat.gui"></script>
-    <!-- <script src="node_modules/three/build/three.js"></script> -->
-    <!-- <script src="node_modules/three/examples/jsm/postprocessing/FilmPass.js"></script> -->
   </head>
 
   <body onresize="resizeGraph()">
     <div id="3d-graph"></div>
 
     <script type="module">
-      // import * as three from "./node_modules/three/build/three.js";
-      // import * as FilmPass from "./node_modules/three/examples/jsm/postprocessing/FilmPass.js";
       import { FilmPass } from "https://cdn.skypack.dev/three@0.136/examples/jsm/postprocessing/FilmPass.js";
       import { UnrealBloomPass } from "https://cdn.skypack.dev/three@0.136/examples/jsm/postprocessing/UnrealBloomPass.js";
-      // import { BokehPass } from "https://cdn.skypack.dev/pin/three@v0.136.0-4Px7Kx1INqCFBN0tXUQc/mode=imports,min/unoptimized/examples/jsm/postprocessing/BokehPass.js";
 
       const Graph = ForceGraph3D()(document.getElementById("3d-graph"))
         // .nodeThreeObject(
