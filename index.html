@@ -21,40 +21,21 @@
       import { UnrealBloomPass } from "https://cdn.skypack.dev/three@0.136/examples/jsm/postprocessing/UnrealBloomPass.js";
 
       const Graph = ForceGraph3D()(document.getElementById("3d-graph"))
-        // .nodeThreeObject(
-        //   ({ id }) =>
-        //     new THREE.Mesh(
-        //       new THREE.SphereGeometry(4),
-        //       new THREE.MeshStandardMaterial({
-        //         color: id.unknown ? "red" : "blue",
-        //         transparent: true,
-        //         roughness: 0,
-        //         metalness: 1,
-        //         // opacity: id.unknown ? 0.2 : 1,
-        //       })
-        //     )
-        // )
         .jsonUrl("data/wiki.json")
         .nodeId("id")
         .linkSource("from")
         .linkTarget("to")
         .nodeLabel("name")
-        .nodeAutoColorBy("category")
-        // .nodeColor((id) => (id.unknown ? "red" : "blue"))
-        // .nodeColor((node) => "rgba(255, 0, 0, node.opacity)")
-        .nodeOpacity(0.9)
-        .nodeVisibility((id) => !id.unknown)
+        .nodeVal((n) => {
+          return 1.4 ** n.size;
+        })
+        // .nodeAutoColorBy("category")
         .linkLabel("edge_type")
         .linkAutoColorBy("edge_type")
         .linkWidth(8)
         .linkCurvature(0.2)
         .linkOpacity(0.5)
-        // .linkDirectionalParticles(10)
-        // .linkDirectionalParticles(() => (settings.particles ? 10 : 0))
-        // .linkDirectionalParticleWidth(2)
-        // .backgroundColor("#171717")
         .backgroundColor("#000017")
-        // .backgroundColor("#000077")
         .onNodeClick((node) => {
           // Click to arrive at node
           const distance = 40;
@@ -71,16 +52,6 @@
           );
         });
 
-      // function setZPosition() {
-      //   Graph.graphData().nodes.forEach((n) => {
-      //     n.fz = 0;
-      //   });
-      // }
-
-      // Graph.setZPosition();
-
-      // Graph.nodeColor(randomColor);
-
       // function randomColor(n) {
       //   const r = 255;
       //   const g = 0;
@@ -91,9 +62,6 @@
 
       // function refreshColors() {
       //   Graph.nodeColor(randomColor);
-      //   // Graph.graphData().nodes.forEach((n) => {
-      //   // n.fz = zPositionForNode(n);
-      //   // });
       // }
 
       const filmPass = new FilmPass(
@@ -107,8 +75,6 @@
       bloomPass.strength = 0.2;
       bloomPass.radius = 1;
       bloomPass.threshold = 0.1;
-
-      // const bokehPass = new BokehPass();
 
       document.addEventListener("keydown", onDocumentKeyDown, false);
       function onDocumentKeyDown(event) {
@@ -158,9 +124,7 @@
       }, 16);
 
       const view = Graph.postProcessingComposer();
-      // view.addPass(bloomPass);
       view.addPass(filmPass);
-      // view.addPass(bokehPass);
     </script>
   </body>
 </html>
