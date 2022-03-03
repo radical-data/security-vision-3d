@@ -32,7 +32,7 @@
         // .nodeAutoColorBy("category")
         .linkLabel("edge_type")
         .linkAutoColorBy("edge_type")
-        .linkWidth(8)
+        .linkWidth((e) => e.edge_importance_normalised)
         .linkCurvature(0.2)
         .linkOpacity(0.5)
         .backgroundColor("#000017")
