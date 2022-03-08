@@ -14,7 +14,7 @@
   </head>
 
   <body onresize="resizeGraph()">
-    <div id="3d-graph"></div>
+    <div id="3d-graph" style="width: 100%; height: 100%"></div>
 
     <script type="module">
       import { FilmPass } from "https://cdn.skypack.dev/three@0.136/examples/jsm/postprocessing/FilmPass.js";
@@ -49,18 +49,6 @@
             3000 // ms transition duration
           );
         });
-
-      const filmPass = new FilmPass(
-        0.8, // noise intensity
-        0, // scanline intensity
-        0, // scanline count
-        false // grayscale
-      );
-
-      const bloomPass = new UnrealBloomPass();
-      bloomPass.strength = 0.2;
-      bloomPass.radius = 1;
-      bloomPass.threshold = 0.1;
 
       document.addEventListener("keydown", onDocumentKeyDown, false);
       function onDocumentKeyDown(event) {
@@ -109,9 +97,19 @@
         }
       }, 16);
 
-      const view = Graph.postProcessingComposer();
-      // view.addPass(bloomPass);
-      view.addPass(filmPass);
+      // Passes
+      const filmPass = new FilmPass(
+        0.8, // noise intensity
+        0, // scanline intensity
+        0, // scanline count
+        false // grayscale
+      );
+      Graph.postProcessingComposer().addPass(filmPass);
+      const bloomPass = new UnrealBloomPass();
+      bloomPass.strength = 0.2;
+      bloomPass.radius = 1;
+      bloomPass.threshold = 0.1;
+      Graph.postProcessingComposer().addPass(bloomPass);
     </script>
   </body>
 </html>
