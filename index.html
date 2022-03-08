@@ -28,7 +28,6 @@
         .nodeLabel("name")
         .nodeAutoColorBy("category")
         .nodeOpacity(0.9)
-        .nodeVisibility((id) => !id.unknown)
         .linkLabel("edge_type")
         .linkAutoColorBy("edge_type")
         .linkWidth(8)
@@ -50,6 +49,25 @@
             3000 // ms transition duration
           );
         });
+
+      function setZPosition() {
+        Graph.graphData().nodes.forEach((n) => {
+          n.fz = zPositionForNode(n);
+        });
+      }
+
+      function zPositionForNode(node) {
+        // return node.connectivity;
+        return node.unknown ? 10 : 100;
+        // return 30 * Math.random();
+      }
+
+      setZPosition();
+
+      Graph.onEngineTick(() => {
+        setZPosition();
+        Graph.onEngineTick(() => {});
+      });
 
       const filmPass = new FilmPass(
         0.8, // noise intensity
