@@ -53,6 +53,23 @@
           );
         });
 
+      function setZPosition() {
+        Graph.graphData().nodes.forEach((n) => {
+          n.fz = zPositionForNode(n);
+        });
+      }
+
+      function zPositionForNode(node) {
+        // return node.connectivity;
+        return node.unknown ? 10 : 100;
+        // return 30 * Math.random();
+      }
+
+      Graph.onEngineTick(() => {
+        setZPosition();
+        Graph.onEngineTick(() => {});
+      });
+
       document.addEventListener("keydown", onDocumentKeyDown, false);
       function onDocumentKeyDown(event) {
         var keyCode = event.which;
