@@ -29,25 +29,26 @@
         .nodeVal((n) => {
           return 1.4 ** n.size;
         })
-        .nodeAutoColorBy("category")
+        .nodeAutoColorBy("community")
         .nodeOpacity(0.9)
         .linkLabel("edge_type")
         .linkAutoColorBy("edge_type")
-        .linkWidth((e) => e.edge_importance_normalised)
+        .linkWidth((e) => e.edge_importance_normalised + 0.4)
         .linkCurvature(0.2)
         .linkOpacity(0.5)
         .backgroundColor("#000077")
+        // Click on node to approach it
         .onNodeClick((node) => {
-          // Click to arrive at node
           const distance = 40;
           const distRatio = 1 + distance / Math.hypot(node.x, node.y, node.z);
 
           Graph.cameraPosition(
             {
+              // new position
               x: node.x * distRatio,
               y: node.y * distRatio,
               z: node.z * distRatio,
-            }, // new position
+            },
             node, // lookAt ({ x, y, z })
             3000 // ms transition duration
           );
