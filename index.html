@@ -108,6 +108,41 @@
         }
       }
 
+      // fog
+      let fogColor = new THREE.Color(0x171717);
+      Graph.scene().fog = new THREE.Fog(fogColor, 100, 1500);
+
+      // // unknown center
+      // const unknownGeometry = new THREE.IcosahedronGeometry(100, 0);
+      // const unknownMaterial = new THREE.MeshPhysicalMaterial({
+      //   roughness: 0.2,
+      //   transmission: 1,
+      //   thickness: 0.1, // Add refraction!
+      // });
+      // const unknown = new THREE.Mesh(unknownGeometry, unknownMaterial);
+      // Graph.scene().add(unknown);
+
+      // // basic plane
+      // const planeGeometry = new THREE.PlaneGeometry(1000, 1000, 1, 1);
+      // const planeMaterial = new THREE.MeshLambertMaterial({
+      //   color: 0x171717,
+      //   side: THREE.DoubleSide,
+      // });
+      // const mesh = new THREE.Mesh(planeGeometry, planeMaterial);
+      // Graph.scene().add(mesh);
+
+      // complex plane
+      // const planeGeometry = new THREE.BoxGeometry(1500, 1500, 20);
+      // const planeMaterial = new THREE.MeshPhysicalMaterial({
+      //   color: 0x777777,
+      //   roughness: 0.2,
+      //   transmission: 1,
+      //   thickness: 1,
+      // });
+      // const mesh = new THREE.Mesh(planeGeometry, planeMaterial);
+      // // mesh.position.set(0, 0, -200);
+      // Graph.scene().add(mesh);
+
       //Define GUI
       const Settings = function () {
         this.rotate = false;
