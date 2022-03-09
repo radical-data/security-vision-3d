@@ -17,9 +17,9 @@
     <div id="3d-graph" style="width: 100%; height: 100%"></div>
 
     <script type="module">
-      // const THREE = require("three");
       import { FilmPass } from "https://cdn.skypack.dev/three@0.136/examples/jsm/postprocessing/FilmPass.js";
       import { UnrealBloomPass } from "https://cdn.skypack.dev/three@0.136/examples/jsm/postprocessing/UnrealBloomPass.js";
+      import { FontLoader } from "https://cdn.skypack.dev/three@0.136/examples/jsm/loaders/FontLoader.js";
 
       const Graph = ForceGraph3D()(document.getElementById("3d-graph"))
         .jsonUrl("data/wiki.json")
@@ -53,6 +53,9 @@
         .linkWidth((e) => e.edge_importance_normalised + 0.4)
         .linkCurvature(0.2)
         .linkOpacity(0.5)
+        // .linkCurvature(({ id }) => Math.random() * 0.7)
+        // .linkCurveRotation(({ id }) => Math.random() * 2 * Math.PI)
+        // .linkResolution(2)
         .backgroundColor("#0000ff")
         // Click on node to approach it
         .onNodeClick((node) => {
@@ -132,16 +135,16 @@
       // Graph.scene().add(mesh);
 
       // complex plane
-      // const planeGeometry = new THREE.BoxGeometry(1500, 1500, 20);
-      // const planeMaterial = new THREE.MeshPhysicalMaterial({
-      //   color: 0x777777,
-      //   roughness: 0.2,
-      //   transmission: 1,
-      //   thickness: 1,
-      // });
-      // const mesh = new THREE.Mesh(planeGeometry, planeMaterial);
-      // // mesh.position.set(0, 0, -200);
-      // Graph.scene().add(mesh);
+      const planeGeometry = new THREE.BoxGeometry(1000, 1000, 20);
+      const planeMaterial = new THREE.MeshPhysicalMaterial({
+        color: 0x777777,
+        roughness: 0.2,
+        transmission: 1,
+        thickness: 1,
+      });
+      const mesh = new THREE.Mesh(planeGeometry, planeMaterial);
+      // mesh.position.set(0, 0, -200);
+      Graph.scene().add(mesh);
 
       //Define GUI
       const Settings = function () {
@@ -189,9 +192,78 @@
         Graph.onEngineTick(() => {});
       });
 
-      // if (settings.flatten) {
-      //   setZPosition();
-      // }
+      // title
+      const loader = new FontLoader();
+      loader.load("lib/helvetiker_regular.typeface.json", function (font) {
+        const color = 0x006699;
+
+        const matDark = new THREE.LineBasicMaterial({
+          color: color,
+          side: THREE.DoubleSide,
+        });
+
+        const matLite = new THREE.MeshBasicMaterial({
+          color: color,
+          transparent: true,
+          opacity: 0.9,
+          side: THREE.DoubleSide,
+        });
+
+        const message = "SECURITY VISION";
+
+        const shapes = font.generateShapes(message, 20); // font size
+
+        const geometry = new THREE.ShapeGeometry(shapes);
+
+        geometry.computeBoundingBox();
+
+        const xMid =
+          -0.5 * (geometry.boundingBox.max.x - geometry.boundingBox.min.x);
+
+        const textHeight = 0;
+        const textDepth = 1350;
+
+        geometry.translate(xMid, textHeight, textDepth);
+
+        // make shape ( N.B. edge view not visible )
+
+        const text = new THREE.Mesh(geometry, matLite);
+        text.position.z = -10;
+        Graph.scene().add(text);
+
+        // make line shape ( N.B. edge view remains visible )
+
+        const holeShapes = [];
+
+        for (let i = 0; i < shapes.length; i++) {
+          const shape = shapes[i];
+
+          if (shape.holes && shape.holes.length > 0) {
+            for (let j = 0; j < shape.holes.length; j++) {
+              const hole = shape.holes[j];
+              holeShapes.push(hole);
+            }
+          }
+        }
+
+        shapes.push.apply(shapes, holeShapes);
+
+        const lineText = new THREE.Object3D();
+
+        for (let i = 0; i < shapes.length; i++) {
+          const shape = shapes[i];
+
+          const points = shape.getPoints();
+          const geometry = new THREE.BufferGeometry().setFromPoints(points);
+
+          geometry.translate(xMid, textHeight, textDepth);
+
+          const lineMesh = new THREE.Line(geometry, matDark);
+          lineText.add(lineMesh);
+        }
+
+        Graph.scene().add(lineText);
+      });
 
       // Passes
       const filmPass = new FilmPass(
