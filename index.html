@@ -17,6 +17,7 @@
     <div id="3d-graph" style="width: 100%; height: 100%"></div>
 
     <script type="module">
+      // const THREE = require("three");
       import { FilmPass } from "https://cdn.skypack.dev/three@0.136/examples/jsm/postprocessing/FilmPass.js";
       import { UnrealBloomPass } from "https://cdn.skypack.dev/three@0.136/examples/jsm/postprocessing/UnrealBloomPass.js";
 
@@ -26,17 +27,33 @@
         .linkSource("from")
         .linkTarget("to")
         .nodeLabel("name")
-        .nodeVal((n) => {
-          return 1.4 ** n.size;
-        })
-        .nodeAutoColorBy("community")
-        .nodeOpacity(0.9)
+        // .nodeVal((n) => {
+        //   return 1.4 ** n.size;
+        // })
+        .nodeThreeObject(
+          (n) =>
+            new THREE.Mesh(
+              n.category == "institution" || n.category == "person"
+                ? new THREE.SphereGeometry(1 + n.size, 0)
+                : new THREE.IcosahedronGeometry(1 + n.size, 0),
+              new THREE.MeshPhysicalMaterial({
+                // color: Math.round(Math.random() * Math.pow(2, 24)),
+                color: n.unknown ? 0x171717 : assignNodeColors(n.community),
+                clearcoat: 1.0,
+                clearcoatRoughness: 0.1,
+                metalness: 0.9,
+                roughness: 0.5,
+                reflectivity: 1,
+              })
+            )
+        )
+        // .nodeAutoColorBy("community")
         .linkLabel("edge_type")
         .linkAutoColorBy("edge_type")
         .linkWidth((e) => e.edge_importance_normalised + 0.4)
         .linkCurvature(0.2)
         .linkOpacity(0.5)
-        .backgroundColor("#000077")
+        .backgroundColor("#0000ff")
         // Click on node to approach it
         .onNodeClick((node) => {
           const distance = 40;
@@ -54,23 +71,6 @@
           );
         });
 
-      function setZPosition() {
-        Graph.graphData().nodes.forEach((n) => {
-          n.fz = zPositionForNode(n);
-        });
-      }
-
-      function zPositionForNode(node) {
-        // return node.connectivity;
-        return node.unknown ? 10 : 100;
-        // return 30 * Math.random();
-      }
-
-      Graph.onEngineTick(() => {
-        setZPosition();
-        Graph.onEngineTick(() => {});
-      });
-
       document.addEventListener("keydown", onDocumentKeyDown, false);
       function onDocumentKeyDown(event) {
         var keyCode = event.which;
@@ -80,6 +80,20 @@
           Graph.zoomToFit(
             3000 // ms transition duration
           );
+        } else if (keyCode == 82) {
+          setZPosition();
+        }
+      }
+
+      function assignNodeColors(property) {
+        if (property == 1) {
+          return 0xbb0000;
+        } else if (property == 2) {
+          return 0x00bb00;
+        } else if (property == 3) {
+          return 0x0000bb;
+        } else {
+          return 0xbbbb00;
         }
       }
 
@@ -98,6 +112,7 @@
       const Settings = function () {
         this.rotate = false;
         this.particles = false;
+        this.flatten = false;
       };
 
       const settings = new Settings();
@@ -105,7 +120,9 @@
 
       gui.add(settings, "rotate");
       gui.add(settings, "particles");
+      gui.add(settings, "flatten");
 
+      // rotation
       let angle = 0;
       const distance = 1000;
       setInterval(() => {
@@ -118,6 +135,29 @@
         }
       }, 16);
 
+      // flatten
+      function setZPosition() {
+        Graph.graphData().nodes.forEach((n) => {
+          n.fz = zPositionForNode(n);
+        });
+      }
+
+      function zPositionForNode(node) {
+        // return node.connectivity;
+        return node.unknown ? -50 : 50;
+        // return node.unknown ? -1500 : 50;
+        // return 30 * Math.random();
+      }
+
+      Graph.onEngineTick(() => {
+        setZPosition();
+        Graph.onEngineTick(() => {});
+      });
+
+      // if (settings.flatten) {
+      //   setZPosition();
+      // }
+
       // Passes
       const filmPass = new FilmPass(
         0.8, // noise intensity
@@ -126,11 +166,11 @@
         false // grayscale
       );
       Graph.postProcessingComposer().addPass(filmPass);
-      const bloomPass = new UnrealBloomPass();
-      bloomPass.strength = 0.2;
-      bloomPass.radius = 1;
-      bloomPass.threshold = 0.1;
-      Graph.postProcessingComposer().addPass(bloomPass);
+      // const bloomPass = new UnrealBloomPass();
+      // bloomPass.strength = 0.2;
+      // bloomPass.radius = 1;
+      // bloomPass.threshold = 0.1;
+      // Graph.postProcessingComposer().addPass(bloomPass);
     </script>
   </body>
 </html>
