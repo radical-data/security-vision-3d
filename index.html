@@ -11,6 +11,12 @@
     <script src="//unpkg.com/three"></script>
     <script src="node_modules/3d-force-graph/dist/3d-force-graph.js"></script>
     <script src="//unpkg.com/dat.gui"></script>
+    <script
+      type="module"
+      src="node_modules/three/examples/js/loaders/RGBELoader.js"
+    ></script>
+    <script type="module" src="//unpkg.com/d3-force-limit"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/d3/4.8.0/d3.min.js"></script>
   </head>
 
   <body onresize="resizeGraph()">
@@ -21,15 +27,36 @@
       import { UnrealBloomPass } from "https://cdn.skypack.dev/three@0.136/examples/jsm/postprocessing/UnrealBloomPass.js";
       import { FontLoader } from "https://cdn.skypack.dev/three@0.136/examples/jsm/loaders/FontLoader.js";
 
+      // require("three/examples/js/loaders/RGBELoader.js");
+
+      const hdrEquirect = new THREE.RGBELoader().load(
+        "src/empty_warehouse_01_4k.hdr",
+        () => {
+          hdrEquirect.mapping = THREE.EquirectangularReflectionMapping;
+        }
+      );
+
+      const textureLoader = new THREE.TextureLoader();
+      const normalMapTexture = textureLoader.load("lib/normal.jpg");
+      normalMapTexture.wrapS = THREE.RepeatWrapping;
+      normalMapTexture.wrapT = THREE.RepeatWrapping;
+      // normalMapTexture.repeat.set(1, 1);
+
+      const unknownSphereRadius = 100;
+      const knownSphereRadius = 400;
+      function spherePosition(radius, coord_1, coord_2) {
+        return Math.sqrt(radius ** 2 - coord_1 ** 2 - coord_2 ** 2);
+      }
+
       const Graph = ForceGraph3D()(document.getElementById("3d-graph"))
         .jsonUrl("data/wiki.json")
         .nodeId("id")
         .linkSource("from")
         .linkTarget("to")
         .nodeLabel("name")
-        // .nodeVal((n) => {
-        //   return 1.4 ** n.size;
-        // })
+        .nodeVal((n) => {
+          return 1.4 ** n.size;
+        })
         .nodeThreeObject(
           (n) =>
             new THREE.Mesh(
@@ -39,15 +66,19 @@
               new THREE.MeshPhysicalMaterial({
                 // color: Math.round(Math.random() * Math.pow(2, 24)),
                 color: n.unknown ? 0x171717 : assignNodeColors(n.community),
-                clearcoat: 1.0,
-                clearcoatRoughness: 0.1,
-                metalness: 0.9,
-                roughness: 0.5,
-                reflectivity: 1,
+                side: THREE.DoubleSide,
+                // clearcoat: 1.0,
+                // clearcoatRoughness: 0.5,
+                // metalness: 0.9,
+                // roughness: 0.5,
+                // reflectivity: 1,
+                // envMap: hdrEquirect,
+                // envMapIntensity: 0.5,
               })
             )
         )
-        // .nodeAutoColorBy("community")
+        .nodeOpacity(0.7)
+        .nodeAutoColorBy("community")
         .linkLabel("edge_type")
         .linkAutoColorBy("edge_type")
         .linkWidth((e) => e.edge_importance_normalised + 0.4)
@@ -56,7 +87,8 @@
         // .linkCurvature(({ id }) => Math.random() * 0.7)
         // .linkCurveRotation(({ id }) => Math.random() * 2 * Math.PI)
         // .linkResolution(2)
-        .backgroundColor("#0000ff")
+        // .backgroundColor("#0000ff")
+        .backgroundColor("#171717")
         // Click on node to approach it
         .onNodeClick((node) => {
           const distance = 40;
@@ -72,7 +104,56 @@
             node, // lookAt ({ x, y, z })
             3000 // ms transition duration
           );
-        });
+        })
+        .d3Force(
+          "limit",
+          d3
+            .forceLimit()
+            .x0(
+              (n) =>
+                n.unknown
+                  ? -spherePosition(unknownSphereRadius, n.y, n.z)
+                  : -spherePosition(knownSphereRadius, n.y, n.z)
+              // : -100000
+            )
+            .x1(
+              (n) =>
+                n.unknown
+                  ? spherePosition(unknownSphereRadius, n.y, n.z)
+                  : spherePosition(knownSphereRadius, n.y, n.z)
+              // : 100000
+            )
+            .y0(
+              (n) =>
+                n.unknown
+                  ? -spherePosition(unknownSphereRadius, n.x, n.z)
+                  : -spherePosition(knownSphereRadius, n.x, n.z)
+              // : -100000
+            )
+            .y1(
+              (n) =>
+                n.unknown
+                  ? spherePosition(unknownSphereRadius, n.x, n.z)
+                  : spherePosition(knownSphereRadius, n.x, n.z)
+              // : 100000
+            )
+            .z0(
+              (n) =>
+                n.unknown
+                  ? -spherePosition(unknownSphereRadius, n.x, n.y)
+                  : -spherePosition(knownSphereRadius, n.x, n.y)
+              // : -100000
+            )
+            .z1(
+              (n) =>
+                n.unknown
+                  ? spherePosition(unknownSphereRadius, n.x, n.y)
+                  : spherePosition(knownSphereRadius, n.x, n.y)
+              // : 100000
+            )
+            // .cushionWidth(1000)
+            .cushionStrength(0.0001)
+        );
 
       document.addEventListener("keydown", onDocumentKeyDown, false);
       function onDocumentKeyDown(event) {
@@ -89,14 +170,19 @@
       }
 
       function assignNodeColors(property) {
-        if (property == 1) {
-          return 0xbb0000;
-        } else if (property == 2) {
-          return 0x00bb00;
-        } else if (property == 3) {
-          return 0x0000bb;
+        const remainder = property % 6;
+        if (remainder == 0) {
+          return 0xee2997;
+        } else if (remainder == 1) {
+          return 0xa37e6e;
+        } else if (remainder == 2) {
+          return 0x773264;
+        } else if (remainder == 3) {
+          return 0xc9a33b;
+        } else if (remainder == 4) {
+          return 0xea3609;
         } else {
-          return 0xbbbb00;
+          return 0x773264;
         }
       }
 
@@ -112,18 +198,24 @@
       }
 
       // fog
-      let fogColor = new THREE.Color(0x171717);
-      Graph.scene().fog = new THREE.Fog(fogColor, 100, 1500);
+      // let fogColor = new THREE.Color(0x171717);
+      // Graph.scene().fog = new THREE.Fog(fogColor, 100, 1500);
 
       // // unknown center
-      // const unknownGeometry = new THREE.IcosahedronGeometry(100, 0);
-      // const unknownMaterial = new THREE.MeshPhysicalMaterial({
-      //   roughness: 0.2,
-      //   transmission: 1,
-      //   thickness: 0.1, // Add refraction!
-      // });
-      // const unknown = new THREE.Mesh(unknownGeometry, unknownMaterial);
-      // Graph.scene().add(unknown);
+      const unknownGeometry = new THREE.IcosahedronGeometry(130, 0);
+      const unknownMaterial = new THREE.MeshPhysicalMaterial({
+        roughness: 0.2,
+        transmission: 1,
+        thickness: 0.1, // Add refraction!
+        envMap: hdrEquirect,
+        envMapIntensity: 0.5,
+        // normalScale: new THREE.Vector2(0.1),
+        // normalMap: normalMapTexture,
+        // clearcoatNormalMap: normalMapTexture,
+        // clearcoatNormalScale: new THREE.Vector2(1),
+      });
+      const unknown = new THREE.Mesh(unknownGeometry, unknownMaterial);
+      Graph.scene().add(unknown);
 
       // // basic plane
       // const planeGeometry = new THREE.PlaneGeometry(1000, 1000, 1, 1);
@@ -135,16 +227,23 @@
       // Graph.scene().add(mesh);
 
       // complex plane
-      const planeGeometry = new THREE.BoxGeometry(1000, 1000, 20);
-      const planeMaterial = new THREE.MeshPhysicalMaterial({
-        color: 0x777777,
-        roughness: 0.2,
-        transmission: 1,
-        thickness: 1,
-      });
-      const mesh = new THREE.Mesh(planeGeometry, planeMaterial);
-      // mesh.position.set(0, 0, -200);
-      Graph.scene().add(mesh);
+      // const planeGeometry = new THREE.BoxGeometry(1000, 1000, 20);
+      // const planeMaterial = new THREE.MeshPhysicalMaterial({
+      //   color: 0x777777,
+      //   roughness: 0.2,
+      //   transmission: 1,
+      //   thickness: 1,
+      //   reflectivity: 0.1,
+      //   envMap: hdrEquirect,
+      //   envMapIntensity: 0.5,
+      //   normalScale: new THREE.Vector2(1),
+      //   normalMap: normalMapTexture,
+      //   clearcoatNormalMap: normalMapTexture,
+      //   clearcoatNormalScale: new THREE.Vector2(1),
+      // });
+      // const mesh = new THREE.Mesh(planeGeometry, planeMaterial);
+      // // mesh.position.set(0, 0, -200);
+      // Graph.scene().add(mesh);
 
       //Define GUI
       const Settings = function () {
@@ -188,7 +287,7 @@
       }
 
       Graph.onEngineTick(() => {
-        setZPosition();
+        // setZPosition();
         Graph.onEngineTick(() => {});
       });
 
