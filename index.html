@@ -47,9 +47,14 @@
       function spherePosition(radius, coord_1, coord_2) {
         return Math.sqrt(radius ** 2 - coord_1 ** 2 - coord_2 ** 2);
       }
+      function nodePosition(unknown, coord_1, coord_2) {
+        return unknown
+          ? spherePosition(unknownSphereRadius, coord_1, coord_2)
+          : spherePosition(knownSphereRadius, coord_1, coord_2);
+      }
 
-      const Graph = ForceGraph3D()(document.getElementById("3d-graph"))
-        .jsonUrl("data/wiki.json")
+      // graph config
+      const Graph = ForceGraph3D()
         .nodeId("id")
         .linkSource("from")
         .linkTarget("to")
@@ -109,51 +114,22 @@
           "limit",
           d3
             .forceLimit()
-            .x0(
-              (n) =>
-                n.unknown
-                  ? -spherePosition(unknownSphereRadius, n.y, n.z)
-                  : -spherePosition(knownSphereRadius, n.y, n.z)
-              // : -100000
-            )
-            .x1(
-              (n) =>
-                n.unknown
-                  ? spherePosition(unknownSphereRadius, n.y, n.z)
-                  : spherePosition(knownSphereRadius, n.y, n.z)
-              // : 100000
-            )
-            .y0(
-              (n) =>
-                n.unknown
-                  ? -spherePosition(unknownSphereRadius, n.x, n.z)
-                  : -spherePosition(knownSphereRadius, n.x, n.z)
-              // : -100000
-            )
-            .y1(
-              (n) =>
-                n.unknown
-                  ? spherePosition(unknownSphereRadius, n.x, n.z)
-                  : spherePosition(knownSphereRadius, n.x, n.z)
-              // : 100000
-            )
-            .z0(
-              (n) =>
-                n.unknown
-                  ? -spherePosition(unknownSphereRadius, n.x, n.y)
-                  : -spherePosition(knownSphereRadius, n.x, n.y)
-              // : -100000
-            )
-            .z1(
-              (n) =>
-                n.unknown
-                  ? spherePosition(unknownSphereRadius, n.x, n.y)
-                  : spherePosition(knownSphereRadius, n.x, n.y)
-              // : 100000
-            )
+            .x0((n) => -nodePosition(n.unknown, n.y, n.z))
+            .x1((n) => nodePosition(n.unknown, n.y, n.z))
+            .y0((n) => -nodePosition(n.unknown, n.x, n.z))
+            .y1((n) => nodePosition(n.unknown, n.x, n.z))
+            .z0((n) => -nodePosition(n.unknown, n.x, n.y))
+            .z1((n) => nodePosition(n.unknown, n.x, n.y))
             // .cushionWidth(1000)
             .cushionStrength(0.0001)
         );
+
+      // get data
+      const gData = fetch("data/wiki.json").then((r) => r.json());
+
+      gData.then((data) =>
+        Graph(document.getElementById("3d-graph")).graphData(data)
+      );
 
       document.addEventListener("keydown", onDocumentKeyDown, false);
       function onDocumentKeyDown(event) {
@@ -166,6 +142,8 @@
           );
         } else if (keyCode == 82) {
           setZPosition();
+        } else if (keyCode == 83) {
+          Graph.graphData(gData.nodes.filter((n) => n.unknown));
         }
       }
 
