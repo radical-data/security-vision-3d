@@ -8,15 +8,15 @@
       }
     </style>
 
-    <script src="//unpkg.com/three"></script>
-    <script src="node_modules/3d-force-graph/dist/3d-force-graph.js"></script>
-    <script src="//unpkg.com/dat.gui"></script>
+    <script src="https://unpkg.com/three"></script>
+    <script src="./node_modules/3d-force-graph/dist/3d-force-graph.js"></script>
+    <script src="https://unpkg.com/dat.gui"></script>
     <script
       type="module"
-      src="node_modules/three/examples/js/loaders/RGBELoader.js"
+      src="./node_modules/three/examples/js/loaders/RGBELoader.js"
     ></script>
-    <script type="module" src="//unpkg.com/d3-force-limit"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/d3/4.8.0/d3.min.js"></script>
+    <script type="module" src="https://unpkg.com/d3-force-limit"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.8.0/d3.min.js"></script>
   </head>
 
   <body onresize="resizeGraph()">
@@ -30,20 +30,20 @@
       // require("three/examples/js/loaders/RGBELoader.js");
 
       const hdrEquirect = new THREE.RGBELoader().load(
-        "src/empty_warehouse_01_4k.hdr",
+        "./src/empty_warehouse_01_2k.hdr",
         () => {
           hdrEquirect.mapping = THREE.EquirectangularReflectionMapping;
         }
       );
 
       const textureLoader = new THREE.TextureLoader();
-      const normalMapTexture = textureLoader.load("lib/normal.jpg");
+      const normalMapTexture = textureLoader.load("./lib/normal.jpg");
       normalMapTexture.wrapS = THREE.RepeatWrapping;
       normalMapTexture.wrapT = THREE.RepeatWrapping;
       // normalMapTexture.repeat.set(1, 1);
 
       const unknownSphereRadius = 100;
-      const knownSphereRadius = 400;
+      const knownSphereRadius = null;
       function spherePosition(radius, coord_1, coord_2) {
         return Math.sqrt(radius ** 2 - coord_1 ** 2 - coord_2 ** 2);
       }
@@ -109,23 +109,23 @@
             node, // lookAt ({ x, y, z })
             3000 // ms transition duration
           );
-        })
-        .d3Force(
-          "limit",
-          d3
-            .forceLimit()
-            .x0((n) => -nodePosition(n.unknown, n.y, n.z))
-            .x1((n) => nodePosition(n.unknown, n.y, n.z))
-            .y0((n) => -nodePosition(n.unknown, n.x, n.z))
-            .y1((n) => nodePosition(n.unknown, n.x, n.z))
-            .z0((n) => -nodePosition(n.unknown, n.x, n.y))
-            .z1((n) => nodePosition(n.unknown, n.x, n.y))
-            // .cushionWidth(1000)
-            .cushionStrength(0.0001)
-        );
+        });
+      // .d3Force(
+      //   "limit",
+      //   d3
+      //     .forceLimit()
+      //     .x0((n) => -nodePosition(n.unknown, n.y, n.z))
+      //     .x1((n) => nodePosition(n.unknown, n.y, n.z))
+      //     .y0((n) => -nodePosition(n.unknown, n.x, n.z))
+      //     .y1((n) => nodePosition(n.unknown, n.x, n.z))
+      //     .z0((n) => -nodePosition(n.unknown, n.x, n.y))
+      //     .z1((n) => nodePosition(n.unknown, n.x, n.y))
+      //     // .cushionWidth(1000)
+      //     .cushionStrength(0.0001)
+      // );
 
       // get data
-      const gData = fetch("data/wiki.json").then((r) => r.json());
+      const gData = fetch("./data/wiki.json").then((r) => r.json());
 
       gData.then((data) =>
         Graph(document.getElementById("3d-graph")).graphData(data)
@@ -180,8 +180,8 @@
       // Graph.scene().fog = new THREE.Fog(fogColor, 100, 1500);
 
       // // unknown center
-      const unknownGeometry = new THREE.IcosahedronGeometry(130, 0);
-      const unknownMaterial = new THREE.MeshPhysicalMaterial({
+      const blackholeGeometry = new THREE.IcosahedronGeometry(130, 0);
+      const blackholeMaterial = new THREE.MeshPhysicalMaterial({
         roughness: 0.2,
         transmission: 1,
         thickness: 0.1, // Add refraction!
@@ -192,86 +192,187 @@
         // clearcoatNormalMap: normalMapTexture,
         // clearcoatNormalScale: new THREE.Vector2(1),
       });
-      const unknown = new THREE.Mesh(unknownGeometry, unknownMaterial);
-      Graph.scene().add(unknown);
-
-      // // basic plane
-      // const planeGeometry = new THREE.PlaneGeometry(1000, 1000, 1, 1);
-      // const planeMaterial = new THREE.MeshLambertMaterial({
-      //   color: 0x171717,
-      //   side: THREE.DoubleSide,
-      // });
-      // const mesh = new THREE.Mesh(planeGeometry, planeMaterial);
-      // Graph.scene().add(mesh);
+      const blackhole = new THREE.Mesh(blackholeGeometry, blackholeMaterial);
+      Graph.scene().add(blackhole);
 
       // complex plane
-      // const planeGeometry = new THREE.BoxGeometry(1000, 1000, 20);
-      // const planeMaterial = new THREE.MeshPhysicalMaterial({
-      //   color: 0x777777,
-      //   roughness: 0.2,
-      //   transmission: 1,
-      //   thickness: 1,
-      //   reflectivity: 0.1,
-      //   envMap: hdrEquirect,
-      //   envMapIntensity: 0.5,
-      //   normalScale: new THREE.Vector2(1),
-      //   normalMap: normalMapTexture,
-      //   clearcoatNormalMap: normalMapTexture,
-      //   clearcoatNormalScale: new THREE.Vector2(1),
-      // });
-      // const mesh = new THREE.Mesh(planeGeometry, planeMaterial);
-      // // mesh.position.set(0, 0, -200);
-      // Graph.scene().add(mesh);
+      const planeGeometry = new THREE.BoxGeometry(1000, 1000, 20);
+      const planeMaterial = new THREE.MeshPhysicalMaterial({
+        color: 0x777777,
+        roughness: 0.2,
+        transmission: 1,
+        thickness: 1,
+        reflectivity: 0.1,
+        // envMap: hdrEquirect,
+        // envMapIntensity: 0.5,
+        // normalScale: new THREE.Vector2(1),
+        // normalMap: normalMapTexture,
+        // clearcoatNormalMap: normalMapTexture,
+        // clearcoatNormalScale: new THREE.Vector2(1),
+      });
+      const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+      // mesh.position.set(0, 0, -200);
+      Graph.scene().add(plane);
+      plane.visible = false;
 
-      //Define GUI
-      const Settings = function () {
-        this.rotate = false;
-        this.particles = false;
-        this.flatten = false;
+      // gui
+      var gui = new dat.GUI();
+      var parameters = {
+        mode: "3d",
+        filterNodes: "none",
+        rotate: false,
       };
+      var mode = gui
+        .add(parameters, "mode", { "3D": "3d", "2D": "2d", Geo: "geo" })
+        .name("Mode")
+        .listen();
+      var filterNodes = gui
+        .add(parameters, "filterNodes", [
+          "none",
+          "dataset",
+          "deployment",
+          "technology",
+          "institution",
+        ])
+        .name("Filter nodes")
+        .listen();
+      var rotate = gui.add(parameters, "rotate").name("Rotate").listen();
 
-      const settings = new Settings();
-      const gui = new dat.GUI();
+      // mode
+      mode.onChange((modeNewValue) => {
+        if (modeNewValue == "3d") {
+          Graph.d3Force(
+            "limit",
+            d3
+              .forceLimit()
+              // .radius((node) => node.size)
+              .x0((n) => -nodePosition(n.unknown, n.y, n.z))
+              .x1((n) => nodePosition(n.unknown, n.y, n.z))
+              .y0((n) => -nodePosition(n.unknown, n.x, n.z))
+              .y1((n) => nodePosition(n.unknown, n.x, n.z))
+              .z0((n) => -nodePosition(n.unknown, n.x, n.y))
+              .z1((n) => nodePosition(n.unknown, n.x, n.y))
+              // .cushionWidth(1000)
+              .cushionStrength(0.0001)
+          );
+          // Graph.graphData().nodes.forEach((n) => {
+          //   n.fx = null;
+          //   n.fx = null;
+          //   n.fz = null;
+          //   n.x = 100 * Math.random();
+          //   n.y = 100 * Math.random();
+          //   n.z = 100 * Math.random();
+          // });
+          blackhole.visible = true;
+          plane.visible = false;
+        } else if (modeNewValue == "2d") {
+          console.log("flatten");
+          Graph.d3Force(
+            "limit",
+            d3
+              .forceLimit()
+              // .radius((node) => node.size)
+              .x0((n) => -10000)
+              .x1((n) => 10000)
+              .y0((n) => -10000)
+              .y1((n) => 10000)
+              .z0((n) => (n.unknown ? -90 : 50))
+              .z1((n) => (n.unknown ? -50 : 90))
+              .cushionWidth(10)
+              .cushionStrength(0.000001)
+          );
+          // Graph.graphData().nodes.forEach((n) => {
+          //   n.fx = null;
+          //   n.fy = null;
+          //   // n.fz = null;
+          //   n.fz = n.unknown ? -50 : 50;
+          //   n.x = 100 * Math.random();
+          //   n.y = 100 * Math.random();
+          // });
+          blackhole.visible = false;
+          plane.visible = true;
+        } else if (modeNewValue == "geo") {
+          Graph.d3Force(
+            "limit",
+            d3
+              .forceLimit()
+              .radius((node) => node.size)
+              .x0((n) => (n.longitude == null ? -10000 : 10 * n.longitude - 20))
+              .x1((n) => (n.longitude == null ? 10000 : 10 * n.longitude + 20))
+              .y0((n) =>
+                n.latitude == null ? -10000 : 20 * (n.latitude - 45) - 20
+              )
+              .y1((n) =>
+                n.latitude == null ? 10000 : 20 * (n.latitude - 45) + 20
+              )
+              .z0((n) => -20)
+              .z1((n) => 20)
+              .cushionWidth(0)
+              .cushionStrength(0.0000000001)
+          );
+          //   Graph.graphData().nodes.forEach((n) => {
+          //     n.fz = 50;
+          //     n.fx = n.longitude == null ? null : 10 * n.longitude;
+          //     n.fy = n.latitude == null ? null : 20 * (n.latitude - 45);
+          //   });
+          blackhole.visible = false;
+          plane.visible = false;
+        }
+        Graph.d3ReheatSimulation();
+      });
 
-      gui.add(settings, "rotate");
-      gui.add(settings, "particles");
-      gui.add(settings, "flatten");
+      filterNodes.onFinishChange((newFilterNodesValue) => {
+        // console.log(gData);
+        gData.then((data) => {
+          if (newFilterNodesValue == "none") {
+            Graph.graphData(data);
+          } else {
+            const filteredNodes = data.nodes.filter(
+              (n) => n.category == newFilterNodesValue
+            );
+            // console.log(filteredNodes);
+            const filteredNodesIds = [];
+            JSON.stringify(filteredNodes, (key, value) => {
+              if (key === "id") filteredNodesIds.push(value);
+              return value;
+            });
+            // console.log(filteredNodesIds);
+            const filteredLinks = data.links.filter(
+              (e) =>
+                filteredNodesIds.includes(e.source.id) &
+                filteredNodesIds.includes(e.target.id)
+            );
+            // console.log(filteredLinks);
+            const filteredData = { nodes: filteredNodes, links: filteredLinks };
+            console.log(filteredData);
+            Graph.graphData(filteredData);
+          }
+        });
+        Graph.graphData().nodes.forEach((n) => {
+          n.x = 100 * Math.random();
+          n.y = 100 * Math.random();
+          n.z = 100 * Math.random();
+        });
+      });
 
       // rotation
       let angle = 0;
       const distance = 1000;
-      setInterval(() => {
-        if (settings.rotate) {
-          Graph.cameraPosition({
-            x: distance * Math.sin(angle),
-            z: distance * Math.cos(angle),
-          });
-          angle += Math.PI / 300;
-        }
-      }, 16);
-
-      // flatten
-      function setZPosition() {
-        Graph.graphData().nodes.forEach((n) => {
-          n.fz = zPositionForNode(n);
-        });
-      }
-
-      function zPositionForNode(node) {
-        // return node.connectivity;
-        return node.unknown ? -50 : 50;
-        // return node.unknown ? -1500 : 50;
-        // return 30 * Math.random();
-      }
-
-      Graph.onEngineTick(() => {
-        // setZPosition();
-        Graph.onEngineTick(() => {});
+      rotate.onChange((newValue) => {
+        setInterval(() => {
+          if (parameters.rotate) {
+            Graph.cameraPosition({
+              x: distance * Math.sin(angle),
+              z: distance * Math.cos(angle),
+            });
+            angle += Math.PI / 300;
+          }
+        }, 16);
       });
 
       // title
       const loader = new FontLoader();
-      loader.load("lib/helvetiker_regular.typeface.json", function (font) {
+      loader.load("./lib/helvetiker_regular.typeface.json", function (font) {
         const color = 0x006699;
 
         const matDark = new THREE.LineBasicMaterial({
@@ -350,11 +451,6 @@
         false // grayscale
       );
       Graph.postProcessingComposer().addPass(filmPass);
-      // const bloomPass = new UnrealBloomPass();
-      // bloomPass.strength = 0.2;
-      // bloomPass.radius = 1;
-      // bloomPass.threshold = 0.1;
-      // Graph.postProcessingComposer().addPass(bloomPass);
     </script>
   </body>
 </html>
