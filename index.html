@@ -2,25 +2,19 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <style>
-      body {
-        margin: 0;
-      }
-    </style>
-
+    <title>Security Vision</title>
+    <script src="https://unpkg.com/3d-force-graph"></script>
     <script src="https://unpkg.com/three"></script>
-    <script src="./node_modules/3d-force-graph/dist/3d-force-graph.js"></script>
+    <!-- <script src="./node_modules/3d-force-graph"></script> -->
     <script src="https://unpkg.com/dat.gui"></script>
-    <script
-      type="module"
-      src="./node_modules/three/examples/js/loaders/RGBELoader.js"
-    ></script>
+    <script src="./node_modules/three/examples/js/loaders/RGBELoader.js"></script>
     <script type="module" src="https://unpkg.com/d3-force-limit"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.8.0/d3.min.js"></script>
+    <link rel="stylesheet" href="./style.css" />
   </head>
 
   <body onresize="resizeGraph()">
-    <div id="3d-graph" style="width: 100%; height: 100%"></div>
+    <div id="3d-graph"></div>
 
     <script type="module">
       import { FilmPass } from "https://cdn.skypack.dev/three@0.136/examples/jsm/postprocessing/FilmPass.js";
@@ -30,7 +24,7 @@
       // require("three/examples/js/loaders/RGBELoader.js");
 
       const hdrEquirect = new THREE.RGBELoader().load(
-        "./src/empty_warehouse_01_2k.hdr",
+        "./src/empty_warehouse_01_1k.hdr",
         () => {
           hdrEquirect.mapping = THREE.EquirectangularReflectionMapping;
         }
@@ -195,7 +189,7 @@
       const blackhole = new THREE.Mesh(blackholeGeometry, blackholeMaterial);
       Graph.scene().add(blackhole);
 
-      // complex plane
+      // plane
       const planeGeometry = new THREE.BoxGeometry(1000, 1000, 20);
       const planeMaterial = new THREE.MeshPhysicalMaterial({
         color: 0x777777,
@@ -203,8 +197,8 @@
         transmission: 1,
         thickness: 1,
         reflectivity: 0.1,
-        // envMap: hdrEquirect,
-        // envMapIntensity: 0.5,
+        envMap: hdrEquirect,
+        envMapIntensity: 0.5,
         // normalScale: new THREE.Vector2(1),
         // normalMap: normalMapTexture,
         // clearcoatNormalMap: normalMapTexture,
@@ -214,6 +208,32 @@
       // mesh.position.set(0, 0, -200);
       Graph.scene().add(plane);
       plane.visible = false;
+
+      // map plane
+      const mercatorMapTexture = textureLoader.load(
+        "./lib/mercator-strange.jpg"
+      );
+      // mercatorMapTexture.wrapS = THREE.RepeatWrapping;
+      // mercatorMapTexture.wrapT = THREE.RepeatWrapping;
+      const mapGeometry = new THREE.BoxGeometry(2000, 1000, 20);
+      const mapMaterial = new THREE.MeshPhysicalMaterial({
+        color: 0x777777,
+        roughness: 0.6,
+        transmission: 1,
+        thickness: 1,
+        reflectivity: 0.1,
+        envMap: hdrEquirect,
+        envMapIntensity: 0.5,
+        // envMapIntensity: 0.5,
+        normalScale: new THREE.Vector2(1),
+        normalMap: mercatorMapTexture,
+        // clearcoatNormalMap: mercatorMapTexture,
+        // clearcoatNormalScale: new THREE.Vector2(1),
+      });
+      const map = new THREE.Mesh(mapGeometry, mapMaterial);
+      // map.position.set(0, 0, -40);
+      Graph.scene().add(map);
+      map.visible = false;
 
       // gui
       var gui = new dat.GUI();
@@ -257,9 +277,10 @@
           );
           blackhole.visible = true;
           plane.visible = false;
+          map.visible = false;
         } else if (modeNewValue == "2d") {
           console.log("flatten");
-          Graph.Graph.d3Force(
+          Graph.d3Force(
             "limit",
             d3
               .forceLimit()
@@ -275,6 +296,7 @@
           );
           blackhole.visible = false;
           plane.visible = true;
+          map.visible = false;
         } else if (modeNewValue == "geo") {
           Graph.d3Force(
             "limit",
@@ -289,13 +311,16 @@
               .y1((n) =>
                 n.latitude == null ? 10000 : 20 * (n.latitude - 45) + 20
               )
-              .z0((n) => -20)
-              .z1((n) => 20)
+              // .z0((n) => -20)
+              // .z1((n) => 20)
+              .z0((n) => (n.unknown ? -150 : 50))
+              .z1((n) => (n.unknown ? -50 : 90))
               .cushionWidth(0)
               .cushionStrength(0.0000000001)
           );
           blackhole.visible = false;
           plane.visible = false;
+          map.visible = true;
         }
         Graph.d3ReheatSimulation();
       });
