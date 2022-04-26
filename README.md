@@ -4,6 +4,8 @@
 
 ## Quickstart
 
+To run on a local server:
+
 ```js
-http-server -c-1 
+yarn serve
 ```
