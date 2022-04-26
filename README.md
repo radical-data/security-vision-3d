@@ -6,6 +6,8 @@
 
 To run on a local server:
 
-```js
+```bash
+cd ./security-vision-3d
+yarn install
 yarn serve
 ```
