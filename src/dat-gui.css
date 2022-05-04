@@ -1,7 +1,7 @@
 .dg {
-    font-size: 1.5rem;
-    font-family: 'Urbanist';
-    color: #006699
+    font-size: 1.5rem !important;
+    font-family: 'Urbanist' !important;
+    color: #006699 !important
 }
 
 .dg li {
@@ -15,22 +15,22 @@
 }
 
 .dg .property-name {
-    width: 55%
+    width: 55% !important
 }
 
 .dg .c {
-    width: 45%
+    width: 45% !important
 }
 
 .dg .c select {
-    font-family: 'Urbanist';
-    font-size: 0.9rem;
+    font-family: 'Urbanist' !important;
+    font-size: 0.9rem !important;
 }
 
 .dg.main .close-button {
-    background-color: rgba(0, 102, 153, 0.1);
-    height: auto;
-    padding: 10px;
+    background-color: rgba(0, 102, 153, 0.1) !important;
+    height: auto !important;
+    padding: 10px !important;
 }
 
 /* .dg ul{list-style:none;margin:0;padding:0;width:100%;clear:both}
