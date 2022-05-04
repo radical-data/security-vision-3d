@@ -4,10 +4,12 @@
 
 ## Quickstart
 
-To run on a local server:
+To build:
 
 ```bash
 cd ./security-vision-3d
-yarn install
-yarn serve
+yarn
+yarn build
 ```
+
+Then click on `index.html`.
