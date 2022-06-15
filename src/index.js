@@ -203,10 +203,6 @@ function onDocumentKeyDown(event) {
   }
 }
 
-// fog
-// let fogColor = new THREE.Color(0x171717);
-// Graph.scene().fog = new THREE.Fog(fogColor, 100, 1500);
-
 // // unknown center
 // const blob = new GLTFLoader();
 // blob.load(
