@@ -300,7 +300,7 @@ function show3dMode() {
       .z1((n) => nodePosition(n.unknown, n.x, n.y))
       .cushionWidth(0)
       .cushionStrength(0.0001)
-  ).cameraPosition({ x: 0, y: 0, z: 1500 });
+  );
   blackhole.visible = true;
   plane.visible = false;
   map.visible = false;
@@ -388,7 +388,7 @@ function showGeoMode() {
       .z1((n) => (n.unknown ? -50 : 90))
       .cushionWidth(0)
       .cushionStrength(100)
-  ).cameraPosition({ x: 0, y: 0, z: 1500 });
+  );
   blackhole.visible = false;
   plane.visible = false;
   map.visible = true;
@@ -402,6 +402,7 @@ mode.onChange((modeNewValue) => {
   } else if (modeNewValue == "geo") {
     showGeoMode();
   }
+  resetGraphView();
   Graph.d3ReheatSimulation();
 });
 
@@ -525,3 +526,8 @@ loader.load("./lib/helvetiker_regular.typeface.json", function (font) {
 
   Graph.scene().add(lineText);
 });
+
+function resetGraphView() {
+  Graph.cameraPosition({ x: 0, y: 0, z: 1500 });
+  Graph.camera().up = new Vector3(0, 1, 0);
+}
