@@ -15,6 +15,7 @@ import {
   DoubleSide,
   BoxGeometry,
   Vector2,
+  Vector3,
   LineBasicMaterial,
   MeshBasicMaterial,
   Object3D,
