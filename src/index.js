@@ -356,10 +356,10 @@ var parameters = {
 };
 
 var mode = gui
-  .add(parameters, "mode", { "3D": "3d", "2D": "2d", Geo: "geo" })
+  .add(parameters, "mode", { "3D": "3d", Geo: "geo" })
   .name("Mode")
   .title(
-    "There are three modes: 3D shows a ball of unknowns at the center; 2D separates the known from unknowns along a plane and Geo shows the values geolocated."
+    "There are three modes: 3D shows a ball of unknowns at the center and Geo shows the values geolocated."
   )
   .listen();
 var filterNodes = gui
@@ -407,26 +407,6 @@ function show3dMode() {
   );
   blackhole.visible = true;
   plane.visible = false;
-  map.visible = false;
-}
-
-function show2dMode() {
-  Graph.d3Force(
-    "limit",
-    forceLimit()
-      .radius((node) => node.size)
-      .x0((n) => -10000)
-      .x1((n) => 10000)
-      .y0((n) => -10000)
-      .y1((n) => 10000)
-      .z0((n) => (n.unknown ? -150 : 50))
-      .z1((n) => (n.unknown ? -50 : 90))
-      .cushionWidth(0)
-      .cushionStrength(0.0001)
-  ).cameraPosition({ x: 0, y: 0, z: 1500 });
-
-  blackhole.visible = false;
-  plane.visible = true;
   map.visible = false;
 }
 
@@ -502,8 +482,6 @@ function showGeoMode() {
 mode.onChange((modeNewValue) => {
   if (modeNewValue == "3d") {
     show3dMode();
-  } else if (modeNewValue == "2d") {
-    show2dMode();
   } else if (modeNewValue == "geo") {
     showGeoMode();
   }
