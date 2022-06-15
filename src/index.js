@@ -14,7 +14,6 @@ import {
   MeshPhysicalMaterial,
   DoubleSide,
   BoxGeometry,
-  Vector2,
   Vector3,
   LineBasicMaterial,
   MeshBasicMaterial,
@@ -140,9 +139,9 @@ const Graph = ForceGraph3D({ controlType: "trackball" })(
   // .linkCurveRotation(({ id }) => Math.random() * 2 * Math.PI)
   // .linkResolution(2)
   // .backgroundColor("#0000ff")
-  .backgroundColor("#ffffff")
+  // .backgroundColor("#ffffff")
   // .backgroundColor("#171717")
-  // .backgroundColor("#444444")
+  .backgroundColor("#444444")
   // Click on node to approach it
   .onNodeClick((node) => {
     const distance = 40;
@@ -276,26 +275,6 @@ const blackholeMaterial = new MeshPhysicalMaterial({
 const blackhole = new Mesh(blackholeGeometry, blackholeMaterial);
 Graph.scene().add(blackhole);
 
-// plane
-const planeGeometry = new BoxGeometry(1000, 1000, 20);
-const planeMaterial = new MeshPhysicalMaterial({
-  color: 0x777777,
-  roughness: 0.2,
-  transmission: 1,
-  thickness: 1,
-  reflectivity: 0.1,
-  // envMap: hdrEquirect,
-  // envMapIntensity: 0.5,
-  // normalScale: new THREE.Vector2(1),
-  // normalMap: normalMapTexture,
-  // clearcoatNormalMap: normalMapTexture,
-  // clearcoatNormalScale: new THREE.Vector2(1),
-});
-const plane = new Mesh(planeGeometry, planeMaterial);
-// mesh.position.set(0, 0, -200);
-Graph.scene().add(plane);
-plane.visible = false;
-
 // map plane
 const mercatorMapTexture = textureLoader.load("./lib/mercator-strange.jpg");
 // mercatorMapTexture.wrapS = THREE.RepeatWrapping;
@@ -403,10 +382,9 @@ function show3dMode() {
       .z0((n) => -nodePosition(n.unknown, n.x, n.y))
       .z1((n) => nodePosition(n.unknown, n.x, n.y))
       .cushionWidth(0)
-      .cushionStrength(0.0001)
+      .cushionStrength(100)
   );
   blackhole.visible = true;
-  plane.visible = false;
   map.visible = false;
 }
 
@@ -475,7 +453,6 @@ function showGeoMode() {
       .cushionStrength(100)
   );
   blackhole.visible = false;
-  plane.visible = false;
   map.visible = true;
 }
 
