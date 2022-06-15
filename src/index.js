@@ -111,8 +111,8 @@ const Graph = ForceGraph3D({ controlType: "trackball" })(
     (n) =>
       new Mesh(
         n.category == "institution" || n.category == "person"
-          ? new SphereGeometry(1 + n.size, 0)
-          : new IcosahedronGeometry(1 + n.size, 0),
+          ? new SphereGeometry(1 + n.size, 10)
+          : new IcosahedronGeometry(1 + n.size, 10),
         new MeshPhysicalMaterial({
           // color: Math.round(Math.random() * Math.pow(2, 24)),
           color: n.unknown ? 0x171717 : assignNodeColors(n.community),
