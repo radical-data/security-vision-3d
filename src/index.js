@@ -26,6 +26,7 @@ import {
 import { assignNodeColors } from "./assignNodeColors.js";
 
 import { FilmPass } from "three/examples/jsm/postprocessing/FilmPass.js";
+import { BokehPass } from "three/examples/jsm/postprocessing/BokehPass.js";
 
 import * as dat from "dat.gui";
 
@@ -33,6 +34,7 @@ import forceLimit from "d3-force-limit";
 
 import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
 import { FontLoader } from "three/examples/jsm/loaders/FontLoader.js";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 function resizeGraph() {
   if (Graph) {
@@ -59,9 +61,45 @@ const textureLoader = new TextureLoader();
 const normalMapTexture = textureLoader.load("./lib/normal.jpg");
 normalMapTexture.wrapS = RepeatWrapping;
 normalMapTexture.wrapT = RepeatWrapping;
-// normalMapTexture.repeat.set(1, 1);
+normalMapTexture.repeat.set(1, 1);
 
-const Graph = ForceGraph3D()(document.getElementById("graph-3d"))
+// blackhole
+const baseColorLoader = new TextureLoader();
+const baseColorTexture = baseColorLoader.load(
+  "./src/organic-textures/Abstract_Organic_003_basecolor.jpg"
+);
+baseColorTexture.wrapS = RepeatWrapping;
+baseColorTexture.wrapT = RepeatWrapping;
+baseColorTexture.repeat.set(3, 3);
+
+const heightLoader = new TextureLoader();
+const heightTexture = heightLoader.load(
+  "./src/organic-textures/Abstract_Organic_003_height.png"
+);
+heightTexture.wrapS = RepeatWrapping;
+heightTexture.wrapT = RepeatWrapping;
+heightTexture.repeat.set(3, 3);
+
+const normalLoader = new TextureLoader();
+const normalTexture = normalLoader.load(
+  "./src/organic-textures/Abstract_Organic_003_normal.png"
+);
+normalTexture.wrapS = RepeatWrapping;
+normalTexture.wrapT = RepeatWrapping;
+normalTexture.repeat.set(3, 3);
+
+const roughnessLoader = new TextureLoader();
+const roughnessTexture = roughnessLoader.load(
+  "./src/organic-textures/Scene_-_Root_metallicRoughness.png"
+);
+// roughnessTexture.wrapS = RepeatWrapping;
+// roughnessTexture.wrapT = RepeatWrapping;
+roughnessTexture.repeat.set(3, 3);
+
+// alternative controlTypes: "fly", "orbit"
+const Graph = ForceGraph3D({ controlType: "trackball" })(
+  document.getElementById("graph-3d")
+)
   .nodeId("id")
   .linkSource("from")
   .linkTarget("to")
@@ -78,7 +116,9 @@ const Graph = ForceGraph3D()(document.getElementById("graph-3d"))
         new MeshPhysicalMaterial({
           // color: Math.round(Math.random() * Math.pow(2, 24)),
           color: n.unknown ? 0x171717 : assignNodeColors(n.community),
-          side: DoubleSide,
+          // displacementMap: heightTexture,
+          // displacementScale: 10,
+          // side: DoubleSide,
           // clearcoat: 1.0,
           // clearcoatRoughness: 0.5,
           // metalness: 0.9,
@@ -100,7 +140,9 @@ const Graph = ForceGraph3D()(document.getElementById("graph-3d"))
   // .linkCurveRotation(({ id }) => Math.random() * 2 * Math.PI)
   // .linkResolution(2)
   // .backgroundColor("#0000ff")
-  .backgroundColor("#171717")
+  .backgroundColor("#ffffff")
+  // .backgroundColor("#171717")
+  // .backgroundColor("#444444")
   // Click on node to approach it
   .onNodeClick((node) => {
     const distance = 40;
@@ -137,6 +179,15 @@ gData.then((data) => Graph.graphData(data));
 // );
 // Graph.postProcessingComposer().addPass(filmPass);
 
+// var bokehPass = new BokehPass(Graph.scene(), Graph.camera(), {
+//   focus: 100,
+//   aperture: 0.00001,
+//   maxblur: 0.01,
+//   width: 1500,
+//   height: 1200,
+// });
+// Graph.postProcessingComposer().addPass(bokehPass);
+
 document.addEventListener("keydown", onDocumentKeyDown, false);
 function onDocumentKeyDown(event) {
   var keyCode = event.which;
@@ -158,6 +209,58 @@ function onDocumentKeyDown(event) {
 // Graph.scene().fog = new THREE.Fog(fogColor, 100, 1500);
 
 // // unknown center
+// const blob = new GLTFLoader();
+// blob.load(
+//   "./src/scene.gltf",
+//   function (object) {
+//     // object.traverse((child) => {
+//     //   if (child.material)
+//     //     child.material = new MeshPhysicalMaterial({
+//     //       color: 0x777777,
+//     //       roughness: 0.2,
+//     //       transmission: 1,
+//     //       thickness: 1,
+//     //       reflectivity: 0.1,
+//     //       envMap: hdrEquirect,
+//     //       envMapIntensity: 0.5,
+//     //       // normalScale: new THREE.Vector2(1),
+//     //       // normalMap: normalMapTexture,
+//     //       // clearcoatNormalMap: normalMapTexture,
+//     //       // clearcoatNormalScale: new THREE.Vector2(1),
+//     //     });
+//     // });
+
+//     scene.add(object.scene);
+//   },
+//   undefined,
+//   function (error) {
+//     console.error(error);
+//   }
+// );
+
+// const blackholeGeometry = new SphereGeometry(80, 3200, 1600);
+// const blackholeMaterial = new MeshPhysicalMaterial({
+//   roughness: 0.7,
+//   // transmission: 0.5,
+//   // thickness: 0.1, // Add refraction!
+//   reflectivity: 0.2,
+//   clearcoatRoughness: 1,
+//   metalness: 0,
+//   // envMap: hdrEquirect,
+//   // envMapIntensity: 0.2,
+//   // alphaMap: normalMapTexture,
+//   map: baseColorTexture,
+//   normalMap: normalTexture,
+//   normalScale: new Vector2(1),
+//   roughnessMap: roughnessTexture,
+//   // clearcoatNormalMap: normalMapTexture,
+//   // clearcoatNormalScale: new Vector2(100),
+//   bumpMap: roughnessTexture,
+//   bumpScale: new Vector2(100),
+//   displacementMap: heightTexture,
+//   displacementScale: 10,
+// });
+
 const blackholeGeometry = new IcosahedronGeometry(130, 0);
 const blackholeMaterial = new MeshPhysicalMaterial({
   roughness: 0.2,
@@ -181,8 +284,8 @@ const planeMaterial = new MeshPhysicalMaterial({
   transmission: 1,
   thickness: 1,
   reflectivity: 0.1,
-  envMap: hdrEquirect,
-  envMapIntensity: 0.5,
+  // envMap: hdrEquirect,
+  // envMapIntensity: 0.5,
   // normalScale: new THREE.Vector2(1),
   // normalMap: normalMapTexture,
   // clearcoatNormalMap: normalMapTexture,
@@ -204,11 +307,11 @@ const mapMaterial = new MeshPhysicalMaterial({
   transmission: 1,
   thickness: 1,
   reflectivity: 0.1,
-  envMap: hdrEquirect,
-  envMapIntensity: 0.5,
+  // envMap: hdrEquirect,
   // envMapIntensity: 0.5,
-  normalScale: new Vector2(1),
-  normalMap: mercatorMapTexture,
+  // envMapIntensity: 0.5,
+  // normalScale: new Vector2(1),
+  // normalMap: mercatorMapTexture,
   // clearcoatNormalMap: mercatorMapTexture,
   // clearcoatNormalScale: new THREE.Vector2(1),
 });
@@ -321,6 +424,7 @@ function show2dMode() {
       .cushionWidth(0)
       .cushionStrength(0.0001)
   ).cameraPosition({ x: 0, y: 0, z: 1500 });
+
   blackhole.visible = false;
   plane.visible = true;
   map.visible = false;
