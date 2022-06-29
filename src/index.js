@@ -106,28 +106,51 @@ const Graph = ForceGraph3D({ controlType: "trackball" })(
   .nodeVal((n) => {
     return 1.4 ** n.size;
   })
-  .nodeThreeObject(
-    (n) =>
-      new Mesh(
-        n.category == "institution" || n.category == "person"
-          ? new SphereGeometry(1 + n.size, 10)
-          : new IcosahedronGeometry(1 + n.size, 10),
-        new MeshPhysicalMaterial({
-          // color: Math.round(Math.random() * Math.pow(2, 24)),
-          color: n.unknown ? 0x171717 : assignNodeColors(n.community),
-          // displacementMap: heightTexture,
-          // displacementScale: 10,
-          // side: DoubleSide,
-          // clearcoat: 1.0,
-          // clearcoatRoughness: 0.5,
-          // metalness: 0.9,
-          // roughness: 0.5,
-          // reflectivity: 1,
-          // envMap: hdrEquirect,
-          // envMapIntensity: 0.5,
-        })
-      )
-  )
+  .nodeThreeObject((n) => {
+    const group = new Group();
+    const ball = new Mesh(
+      n.category == "institution" || n.category == "person"
+        ? new SphereGeometry(1 + n.size, 10)
+        : new IcosahedronGeometry(1 + n.size, 10),
+      new MeshPhysicalMaterial({
+        // color: Math.round(Math.random() * Math.pow(2, 24)),
+        color: n.unknown
+          ? 0x171717
+          : assignNodeColors(n.category, n.institution_type),
+        // displacementMap: heightTexture,
+        // displacementScale: 10,
+        // side: DoubleSide,
+        // clearcoat: 1.0,
+        // clearcoatRoughness: 0.5,
+        // metalness: 0.9,
+        // roughness: 0.5,
+        // reflectivity: 1,
+        // envMap: hdrEquirect,
+        // envMapIntensity: 0.5,
+      })
+    );
+    // const sprite = new SpriteText(
+    //   Math.round(`${n.latitude}`) + "\n" + Math.round(`${n.longitude}`),
+    //   16,
+    //   "black"
+    // );
+    const sprite = new SpriteText(n.size > 3.5 ? `${n.name}` : "", 16, "black");
+    group.add(ball);
+    group.add(sprite.translateZ(27));
+    return group;
+  })
+  // .nodeThreeObject((node) => {
+  //   const nodeEl = document.createElement("div");
+  //   nodeEl.textContent = node.id;
+  //   nodeEl.style.color = node.color;
+  //   nodeEl.className = "node-label";
+  //   return new CSS3DObject(nodeEl);
+  // })
+  // .nodeThreeObject((n) => {
+  //   const sprite = new SpriteText(`${n.name}`);
+  //   return sprite;
+  // })
+  // .nodeThreeObjectExtend(true)
   .nodeOpacity(0.7)
   .nodeAutoColorBy("community")
   .linkLabel("edge_type")

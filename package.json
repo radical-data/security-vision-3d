@@ -3,7 +3,9 @@
     "3d-force-graph": "^1.70.10",
     "d3-force-limit": "^1.1.8",
     "dat.gui": "^0.7.9",
-    "three": "^0.140.0"
+    "three": "^0.140.0",
+    "three-css3drenderer": "^1.0.1",
+    "three-spritetext": "^1.6.5"
   },
   "name": "security-vision-3d",
   "version": "1.0.0",
