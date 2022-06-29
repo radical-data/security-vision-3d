@@ -299,7 +299,7 @@ Graph.scene().add(blackhole);
 const mercatorMapTexture = textureLoader.load("./lib/mercator-strange.jpg");
 // mercatorMapTexture.wrapS = THREE.RepeatWrapping;
 // mercatorMapTexture.wrapT = THREE.RepeatWrapping;
-const mapGeometry = new BoxGeometry(2000, 1000, 20);
+const mapGeometry = new BoxGeometry(2000, 1576, 20);
 const mapMaterial = new MeshPhysicalMaterial({
   color: 0x777777,
   roughness: 0.6,
@@ -408,12 +408,20 @@ function show3dMode() {
   map.visible = false;
 }
 
+const mapWidth = 2000;
+const mapHeight = 1570;
+
+// source https://stackoverflow.com/a/14457180/7589249
 function longitudeToScreenTarget(longitude) {
-  return 10 * longitude;
+  const x = longitude * (mapWidth / 360);
+  return x;
 }
 
 function latitudeToScreenTarget(latitude) {
-  return 20 * (latitude - 45);
+  const latRad = (latitude * Math.PI) / 180; // convert to radians
+  const mercN = Math.log(Math.tan(Math.PI / 4 + latRad / 2));
+  const y = mapHeight / 2 - (mapWidth * mercN) / (2 * Math.PI);
+  return -y + 500;
 }
 
 function constrainToCircle(radius, coord_2_actual, coord_2_target) {
