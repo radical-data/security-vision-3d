@@ -14,6 +14,7 @@ import {
   MeshPhysicalMaterial,
   DoubleSide,
   BoxGeometry,
+  Vector2,
   Vector3,
   LineBasicMaterial,
   MeshBasicMaterial,
@@ -305,13 +306,13 @@ const mapMaterial = new MeshPhysicalMaterial({
   transmission: 1,
   thickness: 1,
   reflectivity: 0.1,
-  // envMap: hdrEquirect,
+  envMap: hdrEquirect,
   // envMapIntensity: 0.5,
   // envMapIntensity: 0.5,
-  // normalScale: new Vector2(1),
-  // normalMap: mercatorMapTexture,
-  // clearcoatNormalMap: mercatorMapTexture,
-  // clearcoatNormalScale: new THREE.Vector2(1),
+  normalScale: new Vector2(1),
+  normalMap: mercatorMapTexture,
+  clearcoatNormalMap: mercatorMapTexture,
+  clearcoatNormalScale: new Vector2(1),
 });
 const map = new Mesh(mapGeometry, mapMaterial);
 // map.position.set(0, 0, -40);
