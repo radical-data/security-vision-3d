@@ -22,7 +22,9 @@ import {
   BufferGeometry,
   Line,
   ShapeGeometry,
+  Group,
 } from "three";
+import SpriteText from "three-spritetext";
 import { assignNodeColors } from "./assignNodeColors.js";
 
 import { FilmPass } from "three/examples/jsm/postprocessing/FilmPass.js";
@@ -158,7 +160,7 @@ const Graph = ForceGraph3D()(document.getElementById("graph-3d"))
   // })
   // .nodeThreeObjectExtend(true)
   .nodeOpacity(0.7)
-  .nodeAutoColorBy("community")
+  .nodeAutoColorBy("category")
   .linkLabel("edge_type")
   .linkAutoColorBy("edge_type")
   .linkWidth((e) => e.edge_importance_normalised + 0.4)
@@ -387,10 +389,11 @@ var resetView = gui
 
 // mode
 const unknownSphereRadius = 100;
-const knownSphereRadius = null;
+const knownSphereRadius = Infinity;
 function constrainToSphere(radius, coord_1, coord_2) {
-  return Math.sqrt(radius ** 2 - coord_1 ** 2 - coord_2 ** 2);
+  return Math.max(0, Math.sqrt(radius ** 2 - coord_1 ** 2 - coord_2 ** 2));
 }
+
 function nodePosition(unknown, coord_1, coord_2) {
   return unknown
     ? constrainToSphere(unknownSphereRadius, coord_1, coord_2)
@@ -398,10 +401,23 @@ function nodePosition(unknown, coord_1, coord_2) {
 }
 
 function show3dMode() {
+  Graph.graphData()
+    .nodes.filter((n) => n.longitude)
+    .forEach((n) => {
+      n.fx = null;
+      n.fy = null;
+      n.fz = null;
+    });
   Graph.d3Force(
     "limit",
     forceLimit()
       .radius((node) => node.size)
+      // .x0((n) => (n.unknown ? -50 : -10000))
+      // .x1((n) => (n.unknown ? 50 : 10000))
+      // .y0((n) => (n.unknown ? -50 : -10000))
+      // .y1((n) => (n.unknown ? 50 : 10000))
+      // .z0((n) => (n.unknown ? -50 : -10000))
+      // .z1((n) => (n.unknown ? 50 : 10000))
       .x0((n) => -nodePosition(n.unknown, n.y, n.z))
       .x1((n) => nodePosition(n.unknown, n.y, n.z))
       .y0((n) => -nodePosition(n.unknown, n.x, n.z))
@@ -409,8 +425,13 @@ function show3dMode() {
       .z0((n) => -nodePosition(n.unknown, n.x, n.y))
       .z1((n) => nodePosition(n.unknown, n.x, n.y))
       .cushionWidth(0)
-      .cushionStrength(100)
+      .cushionStrength(0.01)
   );
+  Graph.graphData().nodes.forEach((n) => {
+    n.x = Math.random() * 140 - 70;
+    n.y = Math.random() * 140 - 70;
+    n.z = Math.random() * 140 - 70;
+  });
   blackhole.visible = true;
   map.visible = false;
 }
@@ -435,58 +456,98 @@ function constrainToCircle(radius, coord_2_actual, coord_2_target) {
   return Math.sqrt(radius ** 2 - (coord_2_actual - coord_2_target) ** 2);
 }
 
-const circleRadius = 10;
+const circleRadius = 30;
 
 function showGeoMode() {
-  Graph.d3Force(
-    "limit",
-    forceLimit()
-      .radius((node) => node.size)
-      .x0((n) =>
-        n.longitude == null
-          ? -10000
-          : longitudeToScreenTarget(n.longitude) -
-            constrainToCircle(
-              circleRadius,
-              n.y,
-              latitudeToScreenTarget(n.latitude)
-            )
-      )
-      .x1((n) =>
-        n.longitude == null
-          ? 10000
-          : longitudeToScreenTarget(n.longitude) +
-            constrainToCircle(
-              circleRadius,
-              n.y,
-              latitudeToScreenTarget(n.latitude)
-            )
-      )
-      .y0((n) =>
-        n.latitude == null
-          ? -10000
-          : latitudeToScreenTarget(n.latitude) -
-            constrainToCircle(
-              circleRadius,
-              n.x,
-              longitudeToScreenTarget(n.longitude)
-            )
-      )
-      .y1((n) =>
-        n.latitude == null
-          ? 10000
-          : latitudeToScreenTarget(n.latitude) +
-            constrainToCircle(
-              circleRadius,
-              n.x,
-              longitudeToScreenTarget(n.longitude)
-            )
-      )
-      .z0((n) => (n.unknown ? -150 : 50))
-      .z1((n) => (n.unknown ? -50 : 90))
-      .cushionWidth(0)
-      .cushionStrength(100)
-  );
+  Graph.d3Force("limit", forceLimit());
+  // Graph.d3Force(
+  //   "limit",
+  //   forceLimit()
+  //     .radius((node) => node.size)
+  //     .x0((n) =>
+  //       n.longitude == null
+  //         ? -10000
+  //         : longitudeToScreenTarget(n.longitude) -
+  //           constrainToCircle(
+  //             circleRadius,
+  //             n.y,
+  //             latitudeToScreenTarget(n.latitude)
+  //           )
+  //     )
+  //     .x1((n) =>
+  //       n.longitude == null
+  //         ? 10000
+  //         : longitudeToScreenTarget(n.longitude) +
+  //           constrainToCircle(
+  //             circleRadius,
+  //             n.y,
+  //             latitudeToScreenTarget(n.latitude)
+  //           )
+  //     )
+  //     .y0((n) =>
+  //       n.latitude == null
+  //         ? -10000
+  //         : latitudeToScreenTarget(n.latitude) -
+  //           constrainToCircle(
+  //             circleRadius,
+  //             n.x,
+  //             longitudeToScreenTarget(n.longitude)
+  //           )
+  //     )
+  //     .y1((n) =>
+  //       n.latitude == null
+  //         ? 10000
+  //         : latitudeToScreenTarget(n.latitude) +
+  //           constrainToCircle(
+  //             circleRadius,
+  //             n.x,
+  //             longitudeToScreenTarget(n.longitude)
+  //           )
+  //     )
+  //     .x0((n) =>
+  //       !isNaN(Math.round(n.longitude))
+  //         ? longitudeToScreenTarget(n.longitude) - circleRadius
+  //         : -Infinity
+  //     )
+  //     .x1((n) =>
+  //       !isNaN(Math.round(n.longitude))
+  //         ? longitudeToScreenTarget(n.longitude) + circleRadius
+  //         : Infinity
+  //     )
+  //     .y0((n) =>
+  //       !isNaN(Math.round(n.longitude))
+  //         ? latitudeToScreenTarget(n.latitude) - circleRadius
+  //         : -Infinity
+  //     )
+  //     .y1((n) =>
+  //       !isNaN(Math.round(n.longitude))
+  //         ? latitudeToScreenTarget(n.latitude) + circleRadius
+  //         : Infinity
+  //     )
+  //     .z0((n) => (n.unknown ? -150 : 50))
+  //     .z1((n) => (n.unknown ? -50 : 90))
+  //     .cushionWidth(0)
+  //   // .cushionStrength(100)
+  // );
+  // Graph.graphData().nodes.forEach((n) => {
+  //   n.x = isNaN(n.longitude)
+  //     ? 100 * Math.random() - 50
+  //     : longitudeToScreenTarget(n.longitude);
+  //   n.y = !isNaN(n.latitude)
+  //     ? 100 * Math.random() - 50
+  //     : latitudeToScreenTarget(n.latitude);
+  //   n.z = n.unknown ? -100 : 70;
+  // });
+  Graph.graphData()
+    .nodes.filter((n) => n.longitude)
+    .forEach((n) => {
+      n.fx = longitudeToScreenTarget(n.longitude);
+      n.fy = latitudeToScreenTarget(n.latitude);
+    });
+  Graph.graphData().nodes.forEach((n) => {
+    n.fz = n.unknown ? -100 : 70;
+  });
+  // Graph.d3Force("charge").strength(-120);
   blackhole.visible = false;
   map.visible = true;
 }
@@ -550,7 +611,7 @@ rotate.onChange(() => {
   }, 16);
 });
 
-// title
+// title text
 const loader = new FontLoader();
 loader.load("./lib/helvetiker_regular.typeface.json", function (font) {
   const color = 0x006699;
@@ -621,8 +682,3 @@ loader.load("./lib/helvetiker_regular.typeface.json", function (font) {
 
   Graph.scene().add(lineText);
 });
-
-function resetGraphView() {
-  Graph.cameraPosition({ x: 0, y: 0, z: 1500 });
-  Graph.camera().up = new Vector3(0, 1, 0);
-}
