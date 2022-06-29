@@ -98,3 +98,7 @@ li#ngo::marker {
 li#research::marker {
   color: var(--research-colour);
 }
+
+li#other::marker {
+  color: var(--other-colour);
+}
