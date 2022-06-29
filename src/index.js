@@ -365,8 +365,7 @@ var mode = gui
   .name("Mode")
   .title(
     "There are three modes: 3D shows a ball of unknowns at the center and Geo shows the values geolocated."
-  )
-  .listen();
+  );
 var filterNodes = gui
   .add(parameters, "filterNodes", [
     "none",
@@ -376,8 +375,7 @@ var filterNodes = gui
     "institution",
   ])
   .name("Filter nodes")
-  .title("Show only nodes of this type.")
-  .listen();
+  .title("Show only nodes of this type.");
 var rotate = gui
   .add(parameters, "rotate")
   .name("Auto-rotate")
