@@ -49,6 +49,11 @@ function resizeGraph() {
 
 window.onresize = resizeGraph;
 
+function resetGraphView() {
+  Graph.cameraPosition({ x: 0, y: 0, z: 1500 });
+  Graph.camera().up = new Vector3(0, 1, 0);
+}
+
 // load some textures
 const hdrEquirect = new RGBELoader().load(
   "./src/empty_warehouse_01_1k.hdr",
@@ -352,6 +357,7 @@ var parameters = {
   mode: "3d",
   filterNodes: "none",
   rotate: false,
+  resetView: resetGraphView,
 };
 
 var mode = gui
@@ -375,8 +381,11 @@ var filterNodes = gui
 var rotate = gui
   .add(parameters, "rotate")
   .name("Auto-rotate")
-  .title("Automatically rotates the camera around the graph.")
-  .listen();
+  .title("Automatically rotates the camera around the graph.");
+var resetView = gui
+  .add(parameters, "resetView")
+  .name("Reset View")
+  .title("Returns camera to original view.");
 
 // mode
 const unknownSphereRadius = 100;
