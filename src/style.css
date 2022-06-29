@@ -1,13 +1,99 @@
+:root {
+  --deployment-colour: #ee2997;
+  --dataset-colour: #ea3609;
+  --institution-colour: grey;
+  --government-colour: #773264;
+  --law-enforcement-colour: #c9a33b;
+  --company-colour: #1befcf;
+  --ngo-colour: #408541;
+  --research-colour: #e9ef68;
+  --other-colour: #a37e6e;
+}
+
 html,
 body {
-	width: 100%;
-	height: 100%;
+  width: 100%;
+  height: 100%;
 
-	margin: 0;
-	overflow: hidden;
+  margin: 0;
+  overflow: hidden;
+}
+
+body {
+  font-family: "Helvetica";
+}
+
+main {
+  width: 100%;
+  height: 100%;
 }
 
 #graph-3d {
-	width: 100%;
-	height: 100%;
+  width: 100%;
+  height: 100%;
+}
+
+#legend {
+  position: absolute;
+  height: 100%;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  display: flex;
+  align-self: end;
+  background-color: rgba(255, 255, 255, 0.363);
+  width: fit-content;
+  max-width: 70ch;
+  height: fit-content;
+  overflow-x: clip;
+  overflow-y: scroll;
+  border: #000000 solid 2px;
+  border-bottom: none;
+  border-left: none;
+  border-top-right-radius: 10px;
+  padding: 0 1vw;
+  /* box-shadow: 0.15vw 0.15vw 1.5px 0.4px rgba(0, 0, 0, 0.5); */
+}
+
+li::marker {
+  font-size: 2rem;
+  font-weight: bolder;
+  vertical-align: middle;
+  align-self: center;
+}
+
+li#deployment::marker {
+  color: var(--deployment-colour);
+}
+
+li#dataset::marker {
+  color: var(--dataset-colour);
+}
+
+li#institution::marker {
+  color: var(--institution-colour);
+}
+
+li#institution > * {
+  list-style-type: square !important;
+}
+
+li#government::marker {
+  color: var(--government-colour);
+}
+
+li#law-enforcement::marker {
+  color: var(--law-enforcement-colour);
+}
+
+li#company::marker {
+  color: var(--company-colour);
+}
+
+li#ngo::marker {
+  color: var(--ngo-colour);
+}
+
+li#research::marker {
+  color: var(--research-colour);
 }
