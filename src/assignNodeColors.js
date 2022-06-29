@@ -1,16 +1,29 @@
-export function assignNodeColors(property) {
-  const remainder = property % 6;
-  if (remainder == 0) {
-    return 0xee2997;
-  } else if (remainder == 1) {
-    return 0xa37e6e;
-  } else if (remainder == 2) {
-    return 0x773264;
-  } else if (remainder == 3) {
-    return 0xc9a33b;
-  } else if (remainder == 4) {
-    return 0xea3609;
+function getColour(variableName) {
+  return getComputedStyle(document.documentElement).getPropertyValue(
+    variableName
+  );
+}
+
+export function assignNodeColors(category, institution_type) {
+  if (category == "deployment") {
+    return getColour("--deployment-colour");
+  } else if (category == "dataset") {
+    return getColour("--dataset-colour");
+  } else if (category == "institution") {
+    if (institution_type == "government") {
+      return getColour("--government-colour");
+    } else if (institution_type == "law enforcement") {
+      return getColour("--law-enforcement-colour");
+    } else if (institution_type == "company") {
+      return getColour("--company-colour");
+    } else if (institution_type == "ngo") {
+      return getColour("--ngo-colour");
+    } else if (institution_type == "research") {
+      return getColour("--research-colour");
+    } else {
+      return getColour("--other-colour");
+    }
   } else {
-    return 0x773264;
+    return getColour("--other-colour");
   }
 }
