@@ -538,7 +538,7 @@ filterNodes.onFinishChange((newFilterNodesValue) => {
 // rotation
 let angle = 0;
 const distance = 1000;
-rotate.onChange((newValue) => {
+rotate.onChange(() => {
   setInterval(() => {
     if (parameters.rotate) {
       Graph.cameraPosition({
