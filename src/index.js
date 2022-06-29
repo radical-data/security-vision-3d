@@ -97,9 +97,9 @@ const roughnessTexture = roughnessLoader.load(
 roughnessTexture.repeat.set(3, 3);
 
 // alternative controlTypes: "fly", "orbit"
-const Graph = ForceGraph3D({ controlType: "trackball" })(
-  document.getElementById("graph-3d")
-)
+// controlType: "trackball",
+
+const Graph = ForceGraph3D()(document.getElementById("graph-3d"))
   .nodeId("id")
   .linkSource("from")
   .linkTarget("to")
