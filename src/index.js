@@ -163,9 +163,9 @@ const Graph = ForceGraph3D()(document.getElementById("graph-3d"))
   // .linkCurveRotation(({ id }) => Math.random() * 2 * Math.PI)
   // .linkResolution(2)
   // .backgroundColor("#0000ff")
-  // .backgroundColor("#ffffff")
+  .backgroundColor("#ffffff")
   // .backgroundColor("#171717")
-  .backgroundColor("#444444")
+  // .backgroundColor("#444444")
   // Click on node to approach it
   .onNodeClick((node) => {
     const distance = 40;
