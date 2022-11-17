@@ -48,12 +48,11 @@ main {
   height: fit-content;
   overflow-x: clip;
   overflow-y: scroll;
-  border: #000000 solid 2px;
-  border-bottom: none;
-  border-left: none;
   border-top-right-radius: 10px;
   padding: 0 1vw;
-  /* box-shadow: 0.15vw 0.15vw 1.5px 0.4px rgba(0, 0, 0, 0.5); */
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
+    rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+    rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
 }
 
 li::marker {
