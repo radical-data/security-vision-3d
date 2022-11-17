@@ -106,6 +106,9 @@ roughnessTexture.repeat.set(3, 3);
 // alternative controlTypes: "fly", "orbit"
 // controlType: "trackball",
 
+let backgroundDarkMode = "#444444";
+let backgroundLightMode = "#ffffff";
+
 const Graph = ForceGraph3D()(document.getElementById("graph-3d"))
   .nodeId("id")
   .linkSource("from")
@@ -169,8 +172,9 @@ const Graph = ForceGraph3D()(document.getElementById("graph-3d"))
   // .linkCurvature(({ id }) => Math.random() * 0.7)
   // .linkCurveRotation(({ id }) => Math.random() * 2 * Math.PI)
   // .linkResolution(2)
+  .backgroundColor(backgroundDarkMode)
   // .backgroundColor("#0000ff")
-  .backgroundColor("#ffffff")
+  // .backgroundColor("#ffffff")
   // .backgroundColor("#171717")
   // .backgroundColor("#444444")
   // Click on node to approach it
@@ -360,6 +364,7 @@ var parameters = {
   filterNodes: "none",
   rotate: false,
   resetView: resetGraphView,
+  darkMode: true,
 };
 
 var mode = gui
@@ -386,6 +391,10 @@ var resetView = gui
   .add(parameters, "resetView")
   .name("Reset View")
   .title("Returns camera to original view.");
+var darkMode = gui
+  .add(parameters, "darkMode")
+  .name("Dark Mode")
+  .title("Uses dark background.");
 
 // mode
 const unknownSphereRadius = 100;
@@ -609,6 +618,11 @@ rotate.onChange(() => {
       angle += Math.PI / 300;
     }
   }, 16);
+});
+
+// darkMode
+darkMode.onChange((isDarkMode) => {
+  Graph.backgroundColor(isDarkMode ? backgroundDarkMode : backgroundLightMode);
 });
 
 // title text
