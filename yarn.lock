@@ -2138,6 +2138,11 @@ terser@^5.7.2:
     source-map "~0.8.0-beta.0"
     source-map-support "~0.5.20"
 
+three-css3drenderer@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/three-css3drenderer/-/three-css3drenderer-1.0.1.tgz#6cdd07b1387d300325435f6ddeaf79e767b467c0"
+  integrity sha512-yKjJMjtxNrkF3Ch4c4q15Vt+Xd48s5ckbJvJR98C/JrT82b8xUtjpbqL2E9Yotg0mC6ilMzZmvX34li2JRNw3Q==
+
 three-forcegraph@^1.39:
   version "1.39.4"
   resolved "https://registry.npmjs.org/three-forcegraph/-/three-forcegraph-1.39.4.tgz"
@@ -2163,6 +2168,11 @@ three-render-objects@^1.26:
     accessor-fn "1"
     kapsule "^1.13"
     polished "4"
+
+three-spritetext@^1.6.5:
+  version "1.6.5"
+  resolved "https://registry.yarnpkg.com/three-spritetext/-/three-spritetext-1.6.5.tgz#67d6f5ab985507a0687eccc7b27c112fa268b8f8"
+  integrity sha512-ttA1ce3tJz6OFojLGY3VjtqF9johetq50TztYcPFWqdEUrwPmej5XXcHahVyQGd88FHRDzJmW2rW3zSifUsdYA==
 
 "three@>=0.118 <1":
   version "0.137.5"
