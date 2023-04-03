@@ -178,6 +178,7 @@ const Graph = ForceGraph3D()(document.getElementById("graph-3d"))
   // .backgroundColor("#171717")
   // .backgroundColor("#444444")
   // Click on node to approach it
+  .enableNodeDrag(false)
   .onNodeClick((node) => {
     const distance = 40;
     const distRatio = 1 + distance / Math.hypot(node.x, node.y, node.z);
