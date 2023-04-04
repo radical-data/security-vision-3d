@@ -106,7 +106,7 @@ roughnessTexture.repeat.set(3, 3);
 // alternative controlTypes: "fly", "orbit"
 // controlType: "trackball",
 
-let backgroundDarkMode = "#444444";
+let backgroundDarkMode = "#444444"; //   #0000ff  "#171717"
 let backgroundLightMode = "#ffffff";
 
 const Graph = ForceGraph3D()(document.getElementById("graph-3d"))
@@ -173,10 +173,6 @@ const Graph = ForceGraph3D()(document.getElementById("graph-3d"))
   // .linkCurveRotation(({ id }) => Math.random() * 2 * Math.PI)
   // .linkResolution(2)
   .backgroundColor(backgroundDarkMode)
-  // .backgroundColor("#0000ff")
-  // .backgroundColor("#ffffff")
-  // .backgroundColor("#171717")
-  // .backgroundColor("#444444")
   // Click on node to approach it
   .enableNodeDrag(false)
   .onNodeClick((node) => {
