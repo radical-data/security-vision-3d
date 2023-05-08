@@ -92,3 +92,6 @@ Thumbs.db
 
 # vscode
 .vscode
+
+# svelte
+.svelte-kit
