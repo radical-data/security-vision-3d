@@ -14,10 +14,3 @@
 ## Update data
 
 This repository has a sister repository, securityvisionr, for getting and cleaning the data from the Security Vision database. It creates a file, `wiki.json` that should be placed in `security-vision-3d/data`.
-
-## Note to future developers
-
-We finished working on this project early due to difficulties with the project management, including us not being paid for our work for over a year. If you are asked to continue working on this project, we would appreciate you reaching out to us [here](https://radicaldata.org/contact) so that we can fill you in on certain aspects of the code and the project.
-
-With solidarity and love,
-Radical Data

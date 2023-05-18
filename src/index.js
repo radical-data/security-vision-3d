@@ -1,16 +1,3 @@
-/*
-Note to future developers
-
-We finished working on this project early due to difficulties with the project management,
-including us not being paid for our work for over a year.
-If you are asked to continue working on this project,
-we would appreciate you reaching out to us [here](https://radicaldata.org/contact)
-so that we can fill you in on certain aspects of the code and the project.
-
-With solidarity and love,
-Radical Data
-*/
-
 // style
 import "./style.css";
 import "./dat-gui.css";
